@@ -1,5 +1,6 @@
 {
-  "/api/math-problem/history/route": "app/api/math-problem/history/route.js",
-  "/api/math-problem/route": "app/api/math-problem/route.js",
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/math-problem/submit/route": "app/api/math-problem/submit/route.js",
+  "/page": "app/page.js",
+  "/api/math-problem/route": "app/api/math-problem/route.js"
 }

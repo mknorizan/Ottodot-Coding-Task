@@ -42,6 +42,8 @@ export async function generatePersonalizedFeedback(mathProblemSubmission: MathPr
 
     try {
 
+        console.log("imhere");
+
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             config: {
@@ -58,15 +60,20 @@ export async function generatePersonalizedFeedback(mathProblemSubmission: MathPr
 
                 If the actual answer matches expected answer, provide praise and a brief confirmation. 
                 If the actual answer does not equal expected answer, gently explain where they likely made a mistake and provide the correct step-by-step reasoning without being overly formal. Keep the response concise and encouraging.
+
+                Please provide the step-by-step solution as well.
             `
         });
 
         const responseString = response.text.trim();
         const result = JSON.parse(responseString);
 
+        console.log("result gemini feedback", result);
+
         return {
             isCorrect: result.is_correct,
-            feedback: result.feedback_text
+            feedback: result.feedback_text,
+            stepByStepSolution: result.step_by_step_solution
         } as MathProblemFeedbackResponseDto;
 
     } catch (error) {

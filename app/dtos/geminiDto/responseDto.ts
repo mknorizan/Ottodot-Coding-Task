@@ -6,5 +6,6 @@ export type MathProblemResponseDto = {
 
 export type MathProblemFeedbackResponseDto = {
     isCorrect: boolean,
-    feedback: string
+    feedback: string,
+    stepByStepSolution: string[]
 };

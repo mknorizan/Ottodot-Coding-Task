@@ -25,6 +25,9 @@ export default function Home() {
   const [isShowingProblemHistory, setIsShowingProblemHistory] = useState(false)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState('')
+  const [disabledUserAnswer, setDisabledUserAnswer] = useState<boolean>(false);
+  const [stepByStepSolution, setStepByStepSolution] = useState<string[]>([]);
+  const [showStepByStepSolution, setShowStepByStepSolution] = useState<boolean>(false);
   const [isLoadingGenerateProblem, setIsLoadingGenerateProblem] = useState(false)
   const [isLoadingSubmitAnswer, setIsLoadingSubmitAnswer] = useState(false)
   const [isGeneratingProblemHistory, setIsGeneratingProblemHistory] = useState(false)
@@ -48,8 +51,14 @@ export default function Home() {
       setProblemHistory([]);
       setProblemHistoryButtonText('View Problem History');
 
+      setDisabledUserAnswer(false);
+
       setHint(null);
       setShowHint(false);
+
+      setFeedback('');
+      setStepByStepSolution([]);
+      setShowStepByStepSolution(false);
 
       setIsLoadingGenerateProblem(true);
       
@@ -88,7 +97,10 @@ export default function Home() {
     // save the submission, and generate feedback
     
     try {
+
       setIsLoadingSubmitAnswer(true);
+      setDisabledUserAnswer(true);
+
       const response = await fetch('/api/math-problem/submit', { 
         method: 'POST',
         headers: {
@@ -105,11 +117,15 @@ export default function Home() {
 
       setIsCorrect(data.isAnswerCorrect);
       setFeedback(data.feedbackText);
+      setStepByStepSolution(data.stepByStepSolution);
 
     } catch (err) {
+
       toast.error(`${err}`);
+      setDisabledUserAnswer(false);
 
     } finally {
+      
       setIsLoadingSubmitAnswer(false);
       setUserAnswer('');
     }
@@ -131,6 +147,12 @@ export default function Home() {
       setProblem(null);
       setHint(null);
       setShowHint(false);
+
+      setFeedback('');
+      setStepByStepSolution([]);
+      setShowStepByStepSolution(false);
+
+      setDisabledUserAnswer(false);
 
       try {
 
@@ -175,6 +197,10 @@ export default function Home() {
 
   const handleOnClickShowHint = () => {
     setShowHint(!showHint);
+  }
+
+  const handleOnClickShowStepByStepSolution = () => {
+    setShowStepByStepSolution(!showStepByStepSolution);
   }
 
   return (
@@ -230,6 +256,7 @@ export default function Home() {
                   onChange={(e) => setUserAnswer(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   placeholder="Enter your answer"
+                  disabled={disabledUserAnswer}
                   required
                 />
               </div>
@@ -267,6 +294,29 @@ export default function Home() {
               {isCorrect ? '✅ Correct!' : '❌ Not quite right'}
             </h2>
             <p className="text-gray-800 leading-relaxed">{feedback}</p>
+            <button
+              onClick={handleOnClickShowStepByStepSolution}
+              className="w-full bg-orange hover:bg-gray-100 disabled:bg-gray-200 text-black border-2 border-yellow-600 font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              { !showStepByStepSolution ? 'Show Step-by-Step Solution' : 'Close Solution' }
+            </button>
+
+            { showStepByStepSolution && stepByStepSolution && (
+                <>
+                  <br/>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-700">Step-by-Step Solution 🌟</h2>
+                  {
+                    stepByStepSolution.map((step, index) => (
+                      <div key={index}> 
+                        {/* You need to put actual step content here */}
+                        <h3 className="text-xl font-semibold mb-4 text-gray-700">Step {index + 1}</h3>
+                        <p className="text-lg text-gray-800 leading-relaxed mb-6">{step}</p> 
+                      </div>
+                    ))
+                  }
+                </>
+              )
+            }
           </div>
         )}
       </main>

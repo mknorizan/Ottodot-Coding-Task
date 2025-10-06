@@ -23,22 +23,20 @@ export async function POST(request: Request): Promise<Response> {
             actualAnswer: requestBody.userAnswer
         } as MathProblemSubmissionRequestDto);
 
-        if (personalizedFeedback) {
+        const problemSubmissionDto: MathProblemSubmissionResponseDto = await insertIntoMathProblemSubmission({
+            mathProblemSessionId: requestBody.mathProblemSessionId,
+            actualAnswer: requestBody.userAnswer,
+            isAnswerCorrect: personalizedFeedback.isCorrect,
+            feedbackText: personalizedFeedback.feedback
+        } as MathProblemSubmissionDbRequestDto);
 
-            const problemSubmissionDto: MathProblemSubmissionResponseDto = await insertIntoMathProblemSubmission({
-                mathProblemSessionId: requestBody.mathProblemSessionId,
-                actualAnswer: requestBody.userAnswer,
-                isAnswerCorrect: personalizedFeedback.isCorrect,
-                feedbackText: personalizedFeedback.feedback
-            } as MathProblemSubmissionDbRequestDto);
-
-            return NextResponse.json({
-                mathProblemSessionId: problemSubmissionDto.session_id,
-                userAnswer: problemSubmissionDto.user_answer,
-                isAnswerCorrect: problemSubmissionDto.is_correct,
-                feedbackText: problemSubmissionDto.feedback_text
-            } as SubmitProblemEndpointResponse);
-        }
+        return NextResponse.json({
+            mathProblemSessionId: problemSubmissionDto.session_id,
+            userAnswer: problemSubmissionDto.user_answer,
+            isAnswerCorrect: problemSubmissionDto.is_correct,
+            feedbackText: problemSubmissionDto.feedback_text,
+            stepByStepSolution: personalizedFeedback.stepByStepSolution
+        } as SubmitProblemEndpointResponse);
 
     } catch (err) {
         throw new Error(`${err}`);

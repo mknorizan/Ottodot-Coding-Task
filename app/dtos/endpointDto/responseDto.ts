@@ -10,7 +10,8 @@ export type SubmitProblemEndpointResponse = {
     mathProblemSessionId: string,
     userAnswer: number,
     isAnswerCorrect: boolean,
-    feedbackText: string
+    feedbackText: string,
+    stepByStepSolution: string[]
 };
 
 export type MathProblemHistoryEndpointResponse = {
