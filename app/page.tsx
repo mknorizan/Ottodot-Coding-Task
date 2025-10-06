@@ -30,6 +30,8 @@ export default function Home() {
   const [isGeneratingProblemHistory, setIsGeneratingProblemHistory] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [hint, setHint] = useState<string | null>(null);
+  const [showHint, setShowHint] = useState<boolean>(false);
   const [difficultyLevel, setDifficultyLevel] = useState<string>('easy');
   const [problemType, setProblemType] = useState<string>('addition')
 
@@ -45,6 +47,9 @@ export default function Home() {
       setIsShowingProblemHistory(false);
       setProblemHistory([]);
       setProblemHistoryButtonText('View Problem History');
+
+      setHint(null);
+      setShowHint(false);
 
       setIsLoadingGenerateProblem(true);
       
@@ -62,6 +67,8 @@ export default function Home() {
         problem_text: data.problemText,
         final_answer: data.correctAnswer
       } as MathProblem);
+
+      setHint(data.answerHint);
 
       setSessionId(data.sessionId);
 
@@ -122,6 +129,8 @@ export default function Home() {
       let hasError = false;
 
       setProblem(null);
+      setHint(null);
+      setShowHint(false);
 
       try {
 
@@ -162,6 +171,10 @@ export default function Home() {
 
   const handleProblemTypeOptionChange = (problemType: string) => {
     setProblemType(problemType)
+  }
+
+  const handleOnClickShowHint = () => {
+    setShowHint(!showHint);
   }
 
   return (
@@ -228,7 +241,23 @@ export default function Home() {
               >
                 Submit Answer
               </button>
+              <button
+                onClick={handleOnClickShowHint}
+                className="w-full bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black border-2 border-green-600 font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+              >
+                { !showHint ? 'Show Hint' : 'Close Hint' }
+              </button>
             </form>
+
+            { showHint && hint && (
+              <>
+                <br/>
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Hint 🌟</h2>
+                <p className="text-lg text-gray-800 leading-relaxed mb-6">
+                  {hint}
+                </p>
+              </>
+            )}
           </div>
         )}
 

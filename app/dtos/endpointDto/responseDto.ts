@@ -2,7 +2,8 @@ export type MathProblemEndpointResponse = {
     sessionId: string,
     createdAt: string,
     problemText: string,
-    correctAnswer: number
+    correctAnswer: number,
+    answerHint: string
 };
 
 export type SubmitProblemEndpointResponse = {

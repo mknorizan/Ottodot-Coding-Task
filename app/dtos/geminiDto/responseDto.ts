@@ -1,6 +1,7 @@
 export type MathProblemResponseDto = {
     problemText: string,
-    answer: number
+    answer: number,
+    answerHint: string
 };
 
 export type MathProblemFeedbackResponseDto = {

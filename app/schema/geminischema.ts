@@ -10,6 +10,10 @@ export const mathProblemSchema = {
         final_answer: {
             type: Type.NUMBER,
             description: "The numerical solution to the math problem."
+        },
+        answer_hint: {
+            type: Type.STRING,
+            description: "The complete text of the hint to solve the problem."
         }
     },
     required: ["problem_text", "final_answer"]

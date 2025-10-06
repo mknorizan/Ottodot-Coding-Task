@@ -27,7 +27,8 @@ export async function generateMathProblem(difficultyLevel: string, problemType: 
 
         return {
             problemText: result.problem_text,
-            answer: result.final_answer
+            answer: result.final_answer,
+            answerHint: result.answer_hint
         } as MathProblemResponseDto;
     
       } catch (error) {

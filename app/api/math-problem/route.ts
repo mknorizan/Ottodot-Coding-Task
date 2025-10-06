@@ -24,7 +24,8 @@ export async function POST(request: Request): Promise<Response> {
             sessionId: response.id,
             createdAt: response.created_at,
             problemText: response.problem_text,
-            correctAnswer: response.correct_answer
+            correctAnswer: response.correct_answer,
+            answerHint: mathProblem.answerHint
         } as MathProblemEndpointResponse);
 
     } catch (err) {
