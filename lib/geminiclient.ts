@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { mathProblemSchema, feedbackSchema } from "../app/schema/geminiSchema";
+import { mathProblemSchema, feedbackSchema } from "../app/schema/geminischema";
 import { MathProblemResponseDto, MathProblemFeedbackResponseDto } from "../app/dtos/geminiDto/responseDto";
 import { MathProblemSubmissionRequestDto } from "../app/dtos/geminiDto/requestDto";
 
@@ -7,7 +7,7 @@ const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
 
 const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
 
-export async function generateMathProblem(): Promise<MathProblemResponseDto> {
+export async function generateMathProblem(difficultyLevel: string, problemType: string): Promise<MathProblemResponseDto> {
 
     try {
     
@@ -17,7 +17,9 @@ export async function generateMathProblem(): Promise<MathProblemResponseDto> {
                 responseMimeType: "application/json",
                 responseSchema: mathProblemSchema
             },
-            contents: "Generate a simple math word problem suitable for a 5th grader. The problem should require basic arithmetic to solve."
+            contents: `Generate a simple math word problem suitable for a 5th grader. 
+                       The problem should require basic arithmetic to solve.
+                       Problem difficulty level should be ${difficultyLevel} and focus on ${problemType} arithmetic.`
         });
 
         const responseString = response.text.trim();

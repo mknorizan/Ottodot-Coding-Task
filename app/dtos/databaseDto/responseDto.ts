@@ -1,4 +1,4 @@
-import { Database } from "../../schema/databaseSchema";
+import { Database } from "../../schema/databaseschema";
 
 export type MathProblemSubmissionResponseDto = Database['public']['Tables']['math_problem_submissions']['Insert'];
 

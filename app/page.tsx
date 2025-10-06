@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { MathProblemEndpointResponse, SubmitProblemEndpointResponse, MathProblemHistoryEndpointResponse } from './dtos/endpointDto/responseDto'
-import { ProblemSubmissionRequestDto } from './dtos/endpointDto/requestDto'
+import { GenerateMathProblemRequestDto, ProblemSubmissionRequestDto } from './dtos/endpointDto/requestDto'
 import { toast } from 'react-toastify'
 import ProblemHistoryTable from './components/problemHistoryTable'
+import DifficultyLevelAndProblemTypeRadioButton from './components/difficultyLevelAndProblemTypeRadioButtons'
 
 interface MathProblem {
   problem_text: string
@@ -29,6 +30,8 @@ export default function Home() {
   const [isGeneratingProblemHistory, setIsGeneratingProblemHistory] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [difficultyLevel, setDifficultyLevel] = useState<string>('easy');
+  const [problemType, setProblemType] = useState<string>('addition')
 
   const generateProblem = async () => {
     // TODO: Implement problem generation logic
@@ -45,7 +48,13 @@ export default function Home() {
 
       setIsLoadingGenerateProblem(true);
       
-      const response = await fetch('/api/math-problem', { method: 'POST' });
+      const response = await fetch('/api/math-problem', { 
+        method: 'POST',
+        body: JSON.stringify({
+          difficultyLevel: difficultyLevel,
+          problemType: problemType
+        } as GenerateMathProblemRequestDto)
+      });
       const data: MathProblemEndpointResponse = await response.json();
       console.log("Response from math-problem API:", data);
 
@@ -147,6 +156,14 @@ export default function Home() {
 
   }
 
+  const handleDifficultyLevelOptionChange = (difficultyLevel: string) => {
+    setDifficultyLevel(difficultyLevel);
+  }
+
+  const handleProblemTypeOptionChange = (problemType: string) => {
+    setProblemType(problemType)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <main className="container mx-auto px-4 py-8 max-w-2xl">
@@ -155,6 +172,12 @@ export default function Home() {
         </h1>
         
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <DifficultyLevelAndProblemTypeRadioButton
+            selectedDifficultyLevel={difficultyLevel}
+            selectedProblemType={problemType}
+            handleDifficultyLevelOptionChange={handleDifficultyLevelOptionChange}
+            handleProblemTypeOptionChange={handleProblemTypeOptionChange}
+          />
           <div className="flex flex-col space-y-4">
             <button
               onClick={generateProblem}

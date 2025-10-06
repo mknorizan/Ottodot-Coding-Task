@@ -3,6 +3,7 @@ import { MathProblemResponseDto } from "../../dtos/geminiDto/responseDto";
 import { MathProblemRequestDto } from "../../dtos/databaseDto/requestDto";
 import { MathProblemSessionResponseDto } from "../../dtos/databaseDto/responseDto";
 import { MathProblemEndpointResponse } from "../../dtos/endpointDto/responseDto";
+import { GenerateMathProblemRequestDto } from "../../dtos/endpointDto/requestDto";
 import { insertIntoMathProblemSession } from "../../../lib/supabaseclient";
 import { NextResponse } from "next/server";
 
@@ -10,22 +11,21 @@ export async function POST(request: Request): Promise<Response> {
 
     try {
 
-        const mathProblem: MathProblemResponseDto = await generateMathProblem();
+        const requestBody: GenerateMathProblemRequestDto = await request.json();
 
-        if (mathProblem) {
+        const mathProblem: MathProblemResponseDto = await generateMathProblem(requestBody.difficultyLevel, requestBody.problemType);
 
-            const response: MathProblemSessionResponseDto = await insertIntoMathProblemSession({
-                problemText: mathProblem.problemText,
-                answer: mathProblem.answer
-            } as MathProblemRequestDto);
+        const response: MathProblemSessionResponseDto = await insertIntoMathProblemSession({
+            problemText: mathProblem.problemText,
+            answer: mathProblem.answer
+        } as MathProblemRequestDto);
 
-            return NextResponse.json({
-                sessionId: response.id,
-                createdAt: response.created_at,
-                problemText: response.problem_text,
-                correctAnswer: response.correct_answer
-            } as MathProblemEndpointResponse);
-        }
+        return NextResponse.json({
+            sessionId: response.id,
+            createdAt: response.created_at,
+            problemText: response.problem_text,
+            correctAnswer: response.correct_answer
+        } as MathProblemEndpointResponse);
 
     } catch (err) {
 
