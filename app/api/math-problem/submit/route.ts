@@ -1,11 +1,11 @@
-import { generatePersonalizedFeedback } from "../../../../lib/geminiClient";
+import { generatePersonalizedFeedback } from "../../../../lib/geminiclient";
 import { MathProblemSubmissionResponseDto, MathProblemSessionResponseDto } from "../../../dtos/databaseDto/responseDto"
 import { MathProblemSubmissionRequestDto as MathProblemSubmissionDbRequestDto } from "../../../dtos/databaseDto/requestDto";
 import { ProblemSubmissionRequestDto } from "../../../dtos/endpointDto/requestDto";
 import { SubmitProblemEndpointResponse } from "../../../dtos/endpointDto/responseDto";
 import { MathProblemSubmissionRequestDto } from "../../../dtos/geminiDto/requestDto";
 import { MathProblemFeedbackResponseDto } from "../../../dtos/geminiDto/responseDto";
-import { getMathProblemSessionById, insertIntoMathProblemSubmission } from "../../../../lib/supabaseClient";
+import { getMathProblemSessionById, insertIntoMathProblemSubmission } from "../../../../lib/supabaseclient";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request): Promise<Response> {

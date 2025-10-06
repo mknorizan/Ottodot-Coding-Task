@@ -1,21 +1,32 @@
 'use client'
 
 import { useState } from 'react'
-import { MathProblemEndpointResponse, SubmitProblemEndpointResponse } from './dtos/endpointDto/responseDto'
+import { MathProblemEndpointResponse, SubmitProblemEndpointResponse, MathProblemHistoryEndpointResponse } from './dtos/endpointDto/responseDto'
 import { ProblemSubmissionRequestDto } from './dtos/endpointDto/requestDto'
 import { toast } from 'react-toastify'
+import ProblemHistoryTable from './components/problemHistoryTable'
 
 interface MathProblem {
   problem_text: string
   final_answer: number
 }
 
+interface MathProblemHistory {
+  problem_text: string
+  correct_answer: number
+  created_at: string
+}
+
 export default function Home() {
   const [problem, setProblem] = useState<MathProblem | null>(null)
+  const [problemHistory, setProblemHistory] = useState<MathProblemHistory[]>([])
+  const [problemHistoryButtonText, setProblemHistoryButtonText] = useState<string>('View Problem History')
+  const [isShowingProblemHistory, setIsShowingProblemHistory] = useState(false)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState('')
   const [isLoadingGenerateProblem, setIsLoadingGenerateProblem] = useState(false)
   const [isLoadingSubmitAnswer, setIsLoadingSubmitAnswer] = useState(false)
+  const [isGeneratingProblemHistory, setIsGeneratingProblemHistory] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
@@ -27,6 +38,10 @@ export default function Home() {
     console.log("Inside generate problem");
 
     try {
+
+      setIsShowingProblemHistory(false);
+      setProblemHistory([]);
+      setProblemHistoryButtonText('View Problem History');
 
       setIsLoadingGenerateProblem(true);
       
@@ -85,6 +100,53 @@ export default function Home() {
 
   }
 
+  const generateProblemHistory = async () => {
+
+    if (isShowingProblemHistory) {
+
+      setIsShowingProblemHistory(false);
+      setProblemHistory([]);
+      setProblemHistoryButtonText('View Problem History');
+
+    } else {
+
+      let hasError = false;
+
+      setProblem(null);
+
+      try {
+
+        setIsGeneratingProblemHistory(true);
+        setProblemHistoryButtonText("Generating...");
+
+        const response = await fetch('/api/math-problem/history', { method: 'GET' });
+        const data: MathProblemHistoryEndpointResponse[] = await response.json();
+
+        const mathProblemHistory = data.map(d => {
+          return {
+            problem_text: d.problemText,
+            correct_answer: d.correctAnswer,
+            created_at: d.createdAt
+          } as MathProblemHistory
+        });
+
+        setProblemHistory(mathProblemHistory);
+
+      } catch (err) {
+
+        toast.error(`${err}`);
+        hasError = true;
+      }
+
+      setIsGeneratingProblemHistory(false);
+      setIsShowingProblemHistory(true);
+      hasError ? setProblemHistoryButtonText('View Problem History') 
+               : setProblemHistoryButtonText('Close Problem History');
+
+    }
+
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <main className="container mx-auto px-4 py-8 max-w-2xl">
@@ -93,14 +155,25 @@ export default function Home() {
         </h1>
         
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <button
-            onClick={generateProblem}
-            disabled={isLoadingGenerateProblem}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
-          >
-            {isLoadingGenerateProblem ? 'Generating...' : 'Generate New Problem'}
-          </button>
+          <div className="flex flex-col space-y-4">
+            <button
+              onClick={generateProblem}
+              disabled={isLoadingGenerateProblem}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              {isLoadingGenerateProblem ? 'Generating...' : 'Generate New Problem'}
+            </button>
+            <button
+              onClick={generateProblemHistory}
+              disabled={isGeneratingProblemHistory}
+              className="w-full bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black border-2 border-blue-600 font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              {problemHistoryButtonText}
+            </button>
+          </div>
         </div>
+
+        {isShowingProblemHistory && <ProblemHistoryTable problemHistory={problemHistory} />}
 
         {problem && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">

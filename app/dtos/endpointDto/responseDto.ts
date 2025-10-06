@@ -11,3 +11,10 @@ export type SubmitProblemEndpointResponse = {
     isAnswerCorrect: boolean,
     feedbackText: string
 };
+
+export type MathProblemHistoryEndpointResponse = {
+    sessionId: string,
+    createdAt: string,
+    problemText: string,
+    correctAnswer: number
+};

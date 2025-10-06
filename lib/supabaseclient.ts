@@ -35,6 +35,26 @@ export async function insertIntoMathProblemSession(mathProblem: MathProblemReque
 
 };
 
+export async function getGeneratedMathProblems(): Promise<MathProblemSessionResponseDto[]> {
+
+  const { data, error } = await supabase.from('math_problem_sessions').select();
+  
+  if (error) {
+    throw new Error(`Math Problem Session Get By Session Id Error: ${error}`);
+  }
+
+  const mathProblemSesions: MathProblemSessionResponseDto[] = data.map(d => {
+    return {
+      id: d.id,
+      created_at: d.created_at,
+      problem_text: d.problem_text,
+      correct_answer: d.correct_answer
+    } as MathProblemSessionResponseDto
+  });
+
+  return mathProblemSesions;
+}
+
 export async function getMathProblemSessionById(mathProblemSessionId: string): Promise<MathProblemSessionResponseDto> {
 
   const { data, error } = await supabase
@@ -43,7 +63,7 @@ export async function getMathProblemSessionById(mathProblemSessionId: string): P
                               .eq('id', mathProblemSessionId);
 
   if (error) {
-    throw new Error(`Math Problem Session Select Error: ${error}`);
+    throw new Error(`Math Problem Session Get By Session Id Error: ${error}`);
   }
 
   return {
